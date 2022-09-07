@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/darrielcodes/ExpressIntro/issues"
   },
-  "homepage": "https://github.com/darrielcodes/ExpressIntro#readme"
+  "homepage": "https://github.com/darrielcodes/ExpressIntro#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
 }
