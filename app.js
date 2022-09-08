@@ -118,16 +118,49 @@ app.put("/update-movie/:titleToUpdate", (req, res) => {
 
   //update movie title
   const titleToUpdate = req.params.titleToUpdate
-  const newTitle = req.body.newTitle
-  console.log(newTitle)
+
+  const originalMovieIndex = favoriteMovieList.findIndex((movie) => {
+    if(movie.title === req.params.titleToUpdate){
+    return true 
+  } else {
+      return false
+    }
+  }) // find original movie in array to keep orginal values 
+
+  console.log(originalMovieIndex);
+
+  const originalMovie = favoriteMovieList[originalMovieIndex];
+  console.log(originalMovie);
+
+  //create copy of original array
+  const updatedMovie = {
+    title: originalMovie.title,
+    starRating: originalMovie.starRating,
+    isRecommended: originalMovie.isRecommended,
+    createdAt: originalMovie.createdAt,
+    lastModified: new Date()
+  };
+
+  if(req.body.title !== undefined){
+  updatedMovie.title = req.body.title}
+  
+  if(req.body.starRating !== undefined){
+  updatedMovie.starRating = req.body.starRating}
+  
+  if (req.body.isRecommended !== undefined){
+  updatedMovie.isRecommended = req.body.isRecommended}
+
+  //const newTitle = req.body.newTitle
+  //console.log(newTitle)
   console.log(titleToUpdate)
 
   // to update movie title, first find index of movie
-  const indexOfMovie = favoriteMovieList.indexOf(titleToUpdate)
-  console.log(indexOfMovie)
+  //const indexOfMovie = favoriteMovieList.indexOf(titleToUpdate)
+  //console.log(indexOfMovie)
   
+  favoriteMovieList[originalMovieIndex] = updatedMovie;
   // overwrite value of favoriteMovie List at indexOfmovie with newTitle 
-  favoriteMovieList[indexOfMovie] = newTitle
+  //favoriteMovieList[indexOfMovie] = newTitle
 
   res.json({
     success: true
@@ -138,9 +171,21 @@ app.put("/update-movie/:titleToUpdate", (req, res) => {
 app.delete("/delete-movie/:titleToDelete", (req, res) => {
   console.log("DELETE /delete-movie")
   //title to find and delete
-const titleToDelete = req.params.titleToDelete
-  //find the index of that movie
-const indexOfMovie = favoriteMovieList.indexOf(titleToDelete)
+  //const titleToDelete = req.params.titleToDelete
+  
+//find the index of that movie
+const indexOfMovie = favoriteMovieList.findIndex((movie) => {
+  
+  if(movie.title === req.params.titleToDelete){
+    return true 
+} else {
+    return false
+  }
+});
+
+console.log(indexOfMovie)
+
+
 //if movie not found in array, respond with false
 if (indexOfMovie < 0) {
   res.json({
@@ -154,7 +199,7 @@ favoriteMovieList.splice(indexOfMovie, 1)
   res.json({
     hasBeenDeleted: true
   })
-})
+});
 // app.get('/list-movies', (req, res) => {
 //   console.log('movie path')
 //   let moviesString = favoriteMovieList.join(", ");
@@ -162,7 +207,7 @@ favoriteMovieList.splice(indexOfMovie, 1)
 // })
 
 // app.get('/add-movie', (req, res) => {
-//   newMovie = req.query.newMovie.replace('+','');
+//   updatedMovie = req.query.newMovie.replace('+','');
 //   favoriteMovieList.push(newMovie);
 //   console.log(newMovie)
 //     res.send(`added movie: ${newMovie} -- current list: ${favoriteMovieList}`)
@@ -197,6 +242,7 @@ app.post('/save-user-info', (req, res) => {
 
 //   res.send("")
 // })
+
 //computer acting as a server - we can now request from our own server 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
