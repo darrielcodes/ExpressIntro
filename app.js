@@ -14,8 +14,19 @@ app.use(bodyParser.json());
 ////////////////////////////////////////////////////
 let firstName = null
 let lastName = null
-const favoriteMovieList = ['The Cheetah Girls', 'Hairspray']
-let newMovie = ''
+const favoriteMovieList = [{
+  title: 'The Cheetah Girls',
+  starRating: 5,
+  isRecommended: true,
+  createdAt: new Date(),
+  lastModified: new Date()
+},{title: 'Hairspray',
+  starRating: 5,
+  isRecommended: true,
+  createdAt: new Date(),
+  lastModified: new Date()
+}]
+
 
 //app.get is defining default server route/API route ('/')
 //console.logs only run server terminal not in browser sicne we are working on backend only
@@ -32,10 +43,57 @@ app.get('/', (req, res) => {
 // Create = make a post request
 
 app.post("/new-movie", (req, res) => {
+  console.log("POST to /new-movie")
   // create object in body
-  console.log(req.body)
+  console.log('req.body', req.body)
   
-  const newMovieTitle = req.body.title
+  const newMovieTitle = {
+    title: "",
+    starRating: 0,
+    isRecommended: false,
+    createdAt: new Date(),
+    lastModified: new Date()
+  };
+
+  newMovieTitle.title = req.body.title;
+  newMovieTitle.starRating = req.body.starRating;
+  newMovieTitle.isRecommended = req.body.isRecommended;
+
+  if (req.body.isRecommended === undefined){
+    //should triggger when req.body.isRecommended is undefined
+    res.json({
+      success: false,
+      message: "isRecommended is required field"
+    }) 
+    return;
+  } else {
+    newMovieTitle.isRecommended = req.body.isRecommended
+  };
+
+  if (req.body.title === undefined){
+    //should triggger when req.body.title is undefined
+    res.json({
+      success: false,
+      message: "title is required field"
+    }) 
+    return;
+  } else {
+    newMovieTitle.title = req.body.title
+  };
+
+  if (req.body.starRating === undefined){
+    //should triggger when req.body.starRating is undefined
+    res.json({
+      success: false,
+      message: "starRating is required field"
+    }) 
+    return;
+  } else {
+    newMovieTitle.starRating = req.body.starRating
+  };
+  
+  console.log('newMovie:', newMovieTitle)
+
   favoriteMovieList.push(newMovieTitle)
   // We must respond always and send something back
   res.json({
@@ -45,6 +103,7 @@ app.post("/new-movie", (req, res) => {
 
 // Read = always a get request
 app.get("/all-movies", (req, res) => {
+  console.log("GET to /all-movies")
   //res.send only sends strings. we want to use res.json to send json objects or arrays
   res.json(favoriteMovieList)
 })
@@ -52,6 +111,7 @@ app.get("/all-movies", (req, res) => {
 // Update = put request = requires additional param
 // find a movie and update that movie title
 app.put("/update-movie/:titleToUpdate", (req, res) => {
+  console.log("PUT to /update-movie")
   // route param - /: - specify which movie in list to update
   // value of ^ will show in req.params
   console.log('req params', req.params)
@@ -76,11 +136,11 @@ app.put("/update-movie/:titleToUpdate", (req, res) => {
 
 
 app.delete("/delete-movie/:titleToDelete", (req, res) => {
-
+  console.log("DELETE /delete-movie")
+  //title to find and delete
 const titleToDelete = req.params.titleToDelete
-
+  //find the index of that movie
 const indexOfMovie = favoriteMovieList.indexOf(titleToDelete)
-
 //if movie not found in array, respond with false
 if (indexOfMovie < 0) {
   res.json({
@@ -144,16 +204,23 @@ app.listen(port, () => {
 
 
 /* 
-  Rules of HTTP (Hypertext Transfer Protocol)
-1. An exchange 
-2.
-3.
-4.
-- GET is used for fetching data from server. There cant be any body payload that goes with it.
-- POST is used to create data on the server.
-
-
-
-
-
+	Rules of HTTP (Hypertext Transfer Protocol)
+		1. An exchange of information across the internet MUST start with a Request
+		2. A single Request MUST be answered with a SINGLE Response and there must always be a response
+		3. The data sent in HTTP requests is always going to be plain text 
+			- Note: If we want to send a JSON object, we need to stringify the object first
+			- Note: In order for the browser to render the data, it needs an HTML file to tell the browser how to render the data.
+				HTML + CSS will tell the browser the structure of a page and how to make it look
+			- Note: When you enter a url into the browser that will ALWAYS be a GET request
+		4. There are 4 basic types of HTTP request: GET, POST, PUT, DELETE
+			- GET is used for fetching data from a server. There cannot be any body payload that goes with it.
+			- POST is used to create data on the server. The post request comes with a request body payload.
+			- PUT is used to modify data on the server, and acts similarly to the POST request.
+			- DELETE is used to delete data from the server.
+			- AKA: CRUD (Create, Read, Update, Delete)
+		5. There are 3 ways to send user data to the server
+			- Query Params: req.query - Used primarily to modify the request parameters
+			- Route Params: req.params - Used primarily to request a specfic resource
+			- Body: req.body - Used primarily for sending user data
+				- Note: In Postman, in order to send a body payload you need to go to the 'body' request tab, select raw and then JSON
 */
