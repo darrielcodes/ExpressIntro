@@ -130,6 +130,7 @@ app.put("/update-movie/:titleToUpdate", (req, res) => {
   console.log(originalMovieIndex);
 
   const originalMovie = favoriteMovieList[originalMovieIndex];
+ 
   console.log(originalMovie);
 
   //create copy of original array
@@ -199,6 +200,24 @@ favoriteMovieList.splice(indexOfMovie, 1)
   res.json({
     hasBeenDeleted: true
   })
+});
+
+app.get("/single-movie/:titleToFind", (req, res) => {
+  const titleToFInd = req.params.titleToFind;
+  const indexOfMovie = favoriteMovieList.findIndex((movie) => {
+    if (movie.title === titleToFInd){
+      console.log('match')
+      return true
+    } else {
+      console.log('no match')
+      return false
+    }
+  });
+
+  const foundMovie = favoriteMovieList[indexOfMovie];
+
+  res.json(foundMovie)
+
 });
 // app.get('/list-movies', (req, res) => {
 //   console.log('movie path')
